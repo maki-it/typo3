@@ -21,8 +21,7 @@ A Typo3 Image for Container and Cloud Environments.
 
 ### Mail/SMTP
 
-Also see [**transport_smtp_
-** in the Typo 3 docs](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/MAIL.html#confval-globals-typo3-conf-vars-mail-transport-smtp)
+Also see **[transport_smtp_*](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/MAIL.html#confval-globals-typo3-conf-vars-mail-transport-smtp)** in the Typo 3 docs
 
 - `MAIL_SMTP_ENCRYPTION`: Default `false` Whether to use STARTTLS if possible (default/false) or SSL/TLS (true).
   See [transport_smtp_encrypt](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/MAIL.html#confval-globals-typo3-conf-vars-mail-transport-smtp-encrypt)
