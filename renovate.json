@@ -7,7 +7,7 @@
     {
       "customType": "regex",
       "fileMatch": ["(^|/|\\.)Dockerfile$", "(^|/)Dockerfile\\.[^/]*$"],
-      "matchStrings": ["ARG TYPO3_VERSION=v(?<currentValue>.*?)\\n"],
+      "matchStrings": ["ARG TYPO3_VERSION=(?<currentValue>.*?)\\n"],
       "extractVersionTemplate": "^v(?<version>.*)$",
       "depNameTemplate": "typo3",
       "datasourceTemplate": "github-tags"
