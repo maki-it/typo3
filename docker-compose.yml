@@ -1,0 +1,36 @@
+services:
+  typo3:
+    build:
+      context: src/
+    environment:
+      ENABLE_REVERSE_PROXY: false
+      TZ: Europe/Berlin
+      DOMAIN: test.com
+      LOG_LEVEL: warn  # info
+    ports:
+      - "80:80"
+    volumes:
+      - fileadmin:/var/www/html/fileadmin
+      - typo3conf:/var/www/html/typo3conf
+      - uploads:/var/www/html/uploads
+    networks:
+      - backend
+  database:
+    image: mysql:8.0
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      - "MYSQL_USER=${MYSQL_USER:-typo3}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD:-password}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE:-typo3}"
+      - "MYSQL_RANDOM_ROOT_PASSWORD=yes"
+    networks:
+      - backend
+volumes:
+  database:
+  fileadmin:
+  typo3conf:
+  uploads:
+networks:
+  backend:
