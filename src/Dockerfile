@@ -81,7 +81,7 @@ COPY scripts/typo3 /usr/bin/typo3
 # Copy composer binary to this image
 #COPY --from=composer/composer:latest-bin /composer /usr/local/bin/composer
 
-# Install Typo3
+# Install TYPO3
 RUN tar -xzf typo3_src-${TYPO3_VERSION} && \
     ln -s typo3_src-* typo3_src && \
     ln -s typo3_src/index.php && \

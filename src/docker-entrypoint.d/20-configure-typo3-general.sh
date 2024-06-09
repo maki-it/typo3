@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Typo3 General Configuration
+# TYPO3 General Configuration
 # https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/SYS.html
 
 # Build enabled locale

@@ -1,6 +1,10 @@
-# Typo3 containerized
+# TYPO3 containerized
 
-A Typo3 Image for Container and Cloud Environments with typo3_console pre-installed.
+A TYPO3 Image for Container and Cloud Environments.
+
+## typo3 cli tool with typo3_console 
+
+The TYPO3 CLI tool can be run with the command [`typo3`](src/scripts/typo3) and already includes the [typo3_console](https://extensions.typo3.org/extension/typo3_console) extension.
 
 ## Environment variables
 
@@ -48,12 +52,12 @@ Also see **[transport_smtp_*](https://docs.typo3.org/m/typo3/reference-coreapi/m
 - `MAIL_SMTP_DEFAULT_REPLY_NAME`: Default `-` This default name is used when no other "reply-to" name is set for a
   TYPO3-generated email.
 
-### Automated Typo3 Setup
+### Automated TYPO3 Setup
 
-If you want to let Typo3 set up itself automatically via environment variables
+If you want to let TYPO3 set up itself automatically via environment variables
 
 - `TYPO3_AUTO_SETUP_ENABLE`: Default: `false` Enable the automated setup
-- `TYPO3_PROJECT_NAME`: Default: `New TYPO3 Project` Name of the Typo3 Site
+- `TYPO3_PROJECT_NAME`: Default: `New TYPO3 Project` Name of the TYPO3 Site
 - `TYPO3_SETUP_CREATE_SITE`: Default: `false` Create a basic site setup (root page and site configuration) with the given domain, e.g. "https://your-typo3-site.com/"
 
 #### Administrator User
