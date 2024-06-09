@@ -62,7 +62,7 @@ RUN apt-get update && \
         libpng-dev \
         libzip-dev \
         zlib1g-dev && \
-    rm -rf /var/lib/apt/lists/* /usr/src/*
+    rm -rf /var/lib/apt/lists/*
 
 ADD https://get.typo3.org/${TYPO3_VERSION}/tar.gz typo3_src-${TYPO3_VERSION}
 
@@ -80,7 +80,6 @@ RUN tar -xzf typo3_src-${TYPO3_VERSION} && \
     mkdir typo3conf && \
     mkdir fileadmin && \
     mkdir uploads && \
-    touch FIRST_INSTALL && \
     chown -R www-data: $WEB_ROOT && \
     chmod +x /docker-entrypoint.sh /usr/local/bin/docker-php-entrypoint
 
