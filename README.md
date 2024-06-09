@@ -1,6 +1,6 @@
 # Typo3 containerized
 
-A Typo3 Image for Container and Cloud Environments.
+A Typo3 Image for Container and Cloud Environments with typo3_console pre-installed.
 
 ## Environment variables
 

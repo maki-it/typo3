@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 DONE_FLAG_FILE="${WEB_ROOT}"/typo3conf/.initialized
 
 if [ "$TYPO3_AUTO_SETUP_ENABLE" == "true" ] && [ ! -f "$DONE_FLAG_FILE" ]; then
@@ -12,7 +11,11 @@ if [ "$TYPO3_AUTO_SETUP_ENABLE" == "true" ] && [ ! -f "$DONE_FLAG_FILE" ]; then
   typo3 --version || (echo "ERROR: Setup failed"; exit 1)
 
   TYPO3_SERVER_TYPE="apache" \
-  typo3 setup --no-interaction && \
+  typo3 setup --force --no-interaction && \
+  echo "- Adjusting folder structure" && \
+  typo3 install:fixfolderstructure && \
+  echo "- Setting up extensions"
+  typo3 install:extensionsetupifpossible && \
   (echo "Setup finished"
   touch "$DONE_FLAG_FILE") || \
   (echo "ERROR: Setup failed"

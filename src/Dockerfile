@@ -4,13 +4,16 @@ LABEL maintainer="Maki IT <kontakt@maki-it.de>"
 
 # renovate: datasource=github-tags depName=typo3 packageName=TYPO3/typo3
 ARG TYPO3_VERSION=12.4.11
+# renovate: datasource=github-releases depName=typo3-console packageName=TYPO3-Console/TYPO3-Console
+ARG TYPO3_CONSOLE_VERSION=8.1.1
 ARG WEB_ROOT='/var/www/html'
 
 ENV TZ=UTC \
     LOG_LEVEL=warn \
     WEB_ROOT=$WEB_ROOT \
     LOCALE='en_US' \
-    TYPO3_SETUP_ENABLE=false \
+    TYPO3_AUTO_SETUP_ENABLE=false \
+    TYPO3_SETUP_CREATE_SITE='' \
     # Reverse Proxy
     REVERSE_PROXY_ENABLE=false \
     REVERSE_PROXY_SSL='*' \
@@ -48,7 +51,7 @@ RUN apt-get update && \
         libzip-dev \
         zlib1g-dev \
     # Install required 3rd party tools
-        graphicsmagick ghostscript locales && \
+        graphicsmagick ghostscript locales unzip && \
     sed -i "s/^# *\(${LOCALE}.UTF-8\)/\1/" /etc/locale.gen && \
     locale-gen && \
     # Configure extensions \
@@ -75,6 +78,9 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY docker-entrypoint.d /docker-entrypoint.d
 COPY scripts/typo3 /usr/bin/typo3
 
+# Copy composer binary to this image
+#COPY --from=composer/composer:latest-bin /composer /usr/local/bin/composer
+
 # Install Typo3
 RUN tar -xzf typo3_src-${TYPO3_VERSION} && \
     ln -s typo3_src-* typo3_src && \
@@ -87,7 +93,13 @@ RUN tar -xzf typo3_src-${TYPO3_VERSION} && \
     mkdir uploads && \
     chown -R www-data: $WEB_ROOT && \
     chmod +x /docker-entrypoint.sh /usr/local/bin/docker-php-entrypoint && \
-    chmod +x /bin/typo3
+    chmod +x /bin/typo3 && \
+    curl -o typo3_console.zip "https://extensions.typo3.org/extension/download/typo3_console/${TYPO3_CONSOLE_VERSION}/zip/" && \
+    mkdir -p ${WEB_ROOT}/typo3conf/ext/ && \
+    unzip typo3_console.zip -d ${WEB_ROOT}/typo3conf/ext/typo3_console/ && \
+    rm typo3_console.zip && \
+    php typo3conf/ext/typo3_console/activate
+
 
 VOLUME ${WEB_ROOT}/fileadmin
 VOLUME ${WEB_ROOT}/typo3conf
