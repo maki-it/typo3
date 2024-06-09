@@ -4,7 +4,7 @@ LABEL maintainer="Maki IT <kontakt@maki-it.de>"
 
 # renovate: datasource=github-tags depName=typo3 packageName=TYPO3/typo3
 ARG TYPO3_VERSION=12.4.11
-ARG WEB_ROOT=/var/www/html
+ARG WEB_ROOT='/var/www/html'
 
 ENV TZ=UTC \
     DOMAIN='' \
@@ -49,7 +49,9 @@ RUN apt-get update && \
         zlib1g-dev \
     # Install required 3rd party tools
         graphicsmagick ghostscript locales && \
-    # Configure extensions
+    # Configure extensions \
+    pecl install redis && \
+    docker-php-ext-enable redis && \
     docker-php-ext-configure gd --with-libdir=/usr/include/ --with-jpeg --with-freetype && \
     docker-php-ext-install -j$(nproc) pdo_mysql mysqli soap gd zip opcache intl pgsql pdo_pgsql exif && \
     # Configure Apache as needed
