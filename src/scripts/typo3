@@ -7,4 +7,4 @@ cd /var/www/html/typo3/sysext/core/bin || exit 1
 
 php typo3 "$@"
 
-cd ~-
+cd ~- || exit 1
