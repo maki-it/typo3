@@ -8,7 +8,7 @@ A Typo3 Image for Container and Cloud Environments.
 
 - `TZ`: Default: `UTC` Timezone inside the container, e.g. "Europe/Berlin"
 - `DOMAIN`: Default `-` Domain name of the Website, e.g. "domain.com"
-- `LOCALE`: Default: `en_US` Set UTF-8 compatible locale information
+- `LOCALE`: Default: `en_US` Set a UTF-8 compatible localisation
 - `LOG_LEVEL`: Default: `warn` [Log level](#log-levels) of the Apache web server
 
 ### PHP
@@ -48,11 +48,11 @@ Also see **[transport_smtp_*](https://docs.typo3.org/m/typo3/reference-coreapi/m
 - `MAIL_SMTP_DEFAULT_REPLY_NAME`: Default `-` This default name is used when no other "reply-to" name is set for a
   TYPO3-generated email.
 
-### Typo3 Auto Setup
+### Automated Typo3 Setup
 
 If you want to let Typo3 set up itself automatically via environment variables
 
-- `TYPO3_SETUP_ENABLE`: Default: `false` Enable to use the Typo3 auto setup
+- `TYPO3_AUTO_SETUP_ENABLE`: Default: `false` Enable the automated setup
 - `TYPO3_PROJECT_NAME`: Default: `New TYPO3 Project` Name of the Typo3 Site
 - `TYPO3_SETUP_CREATE_SITE`: Default: `false` Create a basic site setup (root page and site configuration) with the given domain, e.g. "https://your-typo3-site.com/"
 
@@ -66,9 +66,9 @@ If you want to let Typo3 set up itself automatically via environment variables
 
 - `TYPO3_DB_DRIVER`: The built-in driver implementation to use. The following drivers are currently available:
   - `mysqli`: A MySQL/MariaDB driver that uses the mysqli extension.
-  - `pdo_mysql`: A MySQL/MariaDB driver that uses the pdo_mysql PDO extension.
-  - `pdo_pgsql`: A PostgreSQL driver that uses the pdo_pgsql PDO extension.
-  - `pdo_sqlite`: An SQLite driver that uses the pdo_sqlite PDO extension.
+  - `pdoMysql`: A MySQL/MariaDB driver that uses the pdo_mysql PDO extension.
+  - `postgres`: A PostgreSQL driver that uses the pdo_pgsql PDO extension.
+  - `sqlite`: An SQLite driver that uses the pdo_sqlite PDO extension.
 - `TYPO3_DB_DBNAME`: Name of the database/schema to connect to. Can be used with MySQL/MariaDB and PostgreSQL.
 - `TYPO3_DB_HOST`: Hostname or IP address of the database to connect to. Can be used with MySQL/MariaDB and PostgreSQL.
 - `TYPO3_DB_PORT`: Port of the database to connect to. Can be used with MySQL/MariaDB and PostgreSQL.

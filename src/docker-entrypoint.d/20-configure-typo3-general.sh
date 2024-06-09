@@ -5,9 +5,10 @@
 
 # Build enabled locale
 
-sed -i "s/^# *\(${LOCALE}.UTF-8\)/\1/" /etc/locale.gen
-locale-gen
-
+if [ "$LOCALE" != "en_US" ]; then
+  sed -i "s/^# *\(${LOCALE}.UTF-8\)/\1/" /etc/locale.gen
+  locale-gen
+fi
 mkdir -p "${WEB_ROOT}"/typo3conf/system/
 
 echo "<?php
