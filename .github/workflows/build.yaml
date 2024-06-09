@@ -1,0 +1,74 @@
+name: Build Image
+run-name: ${{ github.actor }} builds new container image
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "20 4 * * 0"
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3.2.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract TYPO3 Version from Dockerfile
+        id: get-version
+        shell: bash
+        run: |
+          if [[ $(grep -oP '(?<=^ARG TYPO3_VERSION=).*' src/Dockerfile) =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "MAJOR=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+            echo "MINOR=${BASH_REMATCH[2]}" >> $GITHUB_ENV
+            echo "PATCH=${BASH_REMATCH[3]}" >> $GITHUB_ENV
+            echo "SEMVER=$MAJOR.$MINOR.$PATCH" >> $GITHUB_ENV
+          else
+            exit -1
+          fi
+
+      - name: Extract metadata for the Docker image
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.REGISTRY }}/${{ github.repository }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ env.MAJOR }}
+            type=raw,value=${{ env.MAJOR }}.${{ env.MINOR }}
+            type=raw,value=${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: src/
+          file: Dockerfile
+          platforms: |
+            linux/amd64
+            linux/arm64
+            darwin/amd64
+            darwin/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+          provenance: false  # Fix for unknown/unknown image build
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
