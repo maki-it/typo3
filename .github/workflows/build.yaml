@@ -59,13 +59,10 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: src/
-          file: Dockerfile
+          context: src
           platforms: |
             linux/amd64
             linux/arm64
-            darwin/amd64
-            darwin/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ steps.meta.outputs.tags }}
