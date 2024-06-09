@@ -1,6 +1,6 @@
 # Typo3 containerized
 
-A Typo3 Image for Container and Cloud Environments.
+A Typo3 Image for Container and Cloud Environments with typo3_console pre-installed.
 
 ## Environment variables
 
@@ -8,8 +8,7 @@ A Typo3 Image for Container and Cloud Environments.
 
 - `TZ`: Default: `UTC` Timezone inside the container, e.g. "Europe/Berlin"
 - `DOMAIN`: Default `-` Domain name of the Website, e.g. "domain.com"
-- `ENABLE_REVERSE_PROXY`: Default: `false` Enable to access the website behind a reverse proxy
-- `LOCALE`: Default: `en_US` Set UTF-8 compatible locale information
+- `LOCALE`: Default: `en_US` Set a UTF-8 compatible localisation
 - `LOG_LEVEL`: Default: `warn` [Log level](#log-levels) of the Apache web server
 
 ### PHP
@@ -18,6 +17,14 @@ A Typo3 Image for Container and Cloud Environments.
 - `PHP_MAX_EXECUTION_TIME`: Default `240` Maximum execution time for PHP scripts
 - `PHP_MAX_UPLOAD_FILESIZE`: Default `32M` Maximum size of a single file to upload
 - `PHP_MAX_POST_SIZE` Default `32M` Maximum Post size
+
+### Reverse Proxy
+
+- `REVERSE_PROXY_ENABLE`: Default: `false` Enable to access the website behind a reverse proxy
+- `REVERSE_PROXY_SSL`: Default: `*` '*' (wildcard) or list of IP addresses of proxies that use SSL (https) for the connection to the client, but an unencrypted connection (http) to the server. See the [docs](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/SYS.html#confval-globals-typo3-conf-vars-sys-reverseproxyssl)
+- `REVERSE_PROXY_IPS`: Default: `*` List of IP addresses or '*' (wildcard). If TYPO3 is behind one or more (intransparent) reverse proxies the IP addresses must be added here. See the [docs](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/SYS.html#confval-globals-typo3-conf-vars-sys-reverseproxyip)
+- `REVERSE_PROXY_HEADER_MULTI_VALUE`: Default: `first` Defines which values of a proxy header (for example HTTP_X_FORWARDED_FOR) to use, if more than one is found. See the [docs](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/SYS.html#confval-globals-typo3-conf-vars-sys-reverseproxyheadermultivalue)
+- `REVERSE_PROXY_TRUSTED_HOSTS_PATTERN`: Default: `SERVER_NAME` Regular expression pattern that matches all allowed hostnames (including their ports) of this TYPO3 installation, or the string SERVER_NAME (default). See the [docs](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/SYS.html#confval-globals-typo3-conf-vars-sys-trustedhostspattern)
 
 ### Mail/SMTP
 
@@ -40,6 +47,33 @@ Also see **[transport_smtp_*](https://docs.typo3.org/m/typo3/reference-coreapi/m
   set for a TYPO3-generated email. You can only specify an email address (for example 'info@example.org').
 - `MAIL_SMTP_DEFAULT_REPLY_NAME`: Default `-` This default name is used when no other "reply-to" name is set for a
   TYPO3-generated email.
+
+### Automated Typo3 Setup
+
+If you want to let Typo3 set up itself automatically via environment variables
+
+- `TYPO3_AUTO_SETUP_ENABLE`: Default: `false` Enable the automated setup
+- `TYPO3_PROJECT_NAME`: Default: `New TYPO3 Project` Name of the Typo3 Site
+- `TYPO3_SETUP_CREATE_SITE`: Default: `false` Create a basic site setup (root page and site configuration) with the given domain, e.g. "https://your-typo3-site.com/"
+
+#### Administrator User
+
+- `TYPO3_SETUP_ADMIN_USERNAME`: Username of the initial/first administrator user
+- `TYPO3_SETUP_ADMIN_PASSWORD`: Password of the initial/first administrator user
+- `TYPO3_SETUP_ADMIN_EMAIL`: Email Address of the initial/first administrator user
+
+#### Database Connection
+
+- `TYPO3_DB_DRIVER`: The built-in driver implementation to use. The following drivers are currently available:
+  - `mysqli`: A MySQL/MariaDB driver that uses the mysqli extension.
+  - `pdoMysql`: A MySQL/MariaDB driver that uses the pdo_mysql PDO extension.
+  - `postgres`: A PostgreSQL driver that uses the pdo_pgsql PDO extension.
+  - `sqlite`: An SQLite driver that uses the pdo_sqlite PDO extension.
+- `TYPO3_DB_DBNAME`: Name of the database/schema to connect to. Can be used with MySQL/MariaDB and PostgreSQL.
+- `TYPO3_DB_HOST`: Hostname or IP address of the database to connect to. Can be used with MySQL/MariaDB and PostgreSQL.
+- `TYPO3_DB_PORT`: Port of the database to connect to. Can be used with MySQL/MariaDB and PostgreSQL.
+- `TYPO3_DB_USERNAME`: Username to use when connecting to the database.
+- `TYPO3_DB_PASSWORD`: Password to use when connecting to the database.
 
 ## Log levels
 

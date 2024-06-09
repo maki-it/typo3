@@ -11,6 +11,14 @@
       "extractVersionTemplate": "^v(?<version>.*)$",
       "depNameTemplate": "TYPO3/typo3",
       "datasourceTemplate": "github-tags"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/|\\.)Dockerfile$", "(^|/)Dockerfile\\.[^/]*$"],
+      "matchStrings": ["ARG TYPO3_CONSOLE_VERSION=(?<currentValue>.*?)\\n"],
+      "extractVersionTemplate": "^v(?<version>.*)$",
+      "depNameTemplate": "TYPO3-Console/TYPO3-Console",
+      "datasourceTemplate": "github-tags"
     }
   ]
 }

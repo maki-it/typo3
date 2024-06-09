@@ -3,15 +3,23 @@ FROM php:8.3-apache-bookworm as base
 LABEL maintainer="Maki IT <kontakt@maki-it.de>"
 
 # renovate: datasource=github-tags depName=typo3 packageName=TYPO3/typo3
-ARG TYPO3_VERSION=12.4.15
-ARG WEB_ROOT=/var/www/html
+ARG TYPO3_VERSION=12.4.11
+# renovate: datasource=github-releases depName=typo3-console packageName=TYPO3-Console/TYPO3-Console
+ARG TYPO3_CONSOLE_VERSION=8.1.1
+ARG WEB_ROOT='/var/www/html'
 
 ENV TZ=UTC \
-    DOMAIN='' \
     LOG_LEVEL=warn \
     WEB_ROOT=$WEB_ROOT \
-    ENABLE_REVERSE_PROXY=false \
     LOCALE='en_US' \
+    TYPO3_AUTO_SETUP_ENABLE=false \
+    TYPO3_SETUP_CREATE_SITE='' \
+    # Reverse Proxy
+    REVERSE_PROXY_ENABLE=false \
+    REVERSE_PROXY_SSL='*' \
+    REVERSE_PROXY_IPS='*' \
+    REVERSE_PROXY_HEADER_MULTI_VALUE='first' \
+    REVERSE_PROXY_TRUSTED_HOSTS_PATTERN='SERVER_NAME' \
     # PHP
     PHP_MEMORY_LIMIT=256M \
     PHP_MAX_EXECUTION_TIME=240 \
@@ -43,10 +51,14 @@ RUN apt-get update && \
         libzip-dev \
         zlib1g-dev \
     # Install required 3rd party tools
-        graphicsmagick ghostscript locales && \
-    # Configure extensions
+        graphicsmagick ghostscript locales unzip && \
+    sed -i "s/^# *\(${LOCALE}.UTF-8\)/\1/" /etc/locale.gen && \
+    locale-gen && \
+    # Configure extensions \
+    pecl install redis && \
     docker-php-ext-configure gd --with-libdir=/usr/include/ --with-jpeg --with-freetype && \
-    docker-php-ext-install -j$(nproc) pdo_mysql mysqli soap gd zip opcache intl pgsql pdo_pgsql exif && \
+    docker-php-ext-install -j$(nproc) soap gd zip opcache intl pgsql pdo pdo_pgsql pdo_mysql mysqli exif && \
+    docker-php-ext-enable redis && \
     # Configure Apache as needed
     a2enmod rewrite && \
     apt-get clean && \
@@ -57,13 +69,17 @@ RUN apt-get update && \
         libpng-dev \
         libzip-dev \
         zlib1g-dev && \
-    rm -rf /var/lib/apt/lists/* /usr/src/*
+    rm -rf /var/lib/apt/lists/*
 
 ADD https://get.typo3.org/${TYPO3_VERSION}/tar.gz typo3_src-${TYPO3_VERSION}
 
 COPY configs/php.ini /usr/local/etc/php/conf.d/typo3.ini
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY docker-entrypoint.d /docker-entrypoint.d
+COPY scripts/typo3 /usr/bin/typo3
+
+# Copy composer binary to this image
+#COPY --from=composer/composer:latest-bin /composer /usr/local/bin/composer
 
 # Install Typo3
 RUN tar -xzf typo3_src-${TYPO3_VERSION} && \
@@ -75,9 +91,15 @@ RUN tar -xzf typo3_src-${TYPO3_VERSION} && \
     mkdir typo3conf && \
     mkdir fileadmin && \
     mkdir uploads && \
-    touch FIRST_INSTALL && \
     chown -R www-data: $WEB_ROOT && \
-    chmod +x /docker-entrypoint.sh /usr/local/bin/docker-php-entrypoint
+    chmod +x /docker-entrypoint.sh /usr/local/bin/docker-php-entrypoint && \
+    chmod +x /bin/typo3 && \
+    curl -o typo3_console.zip "https://extensions.typo3.org/extension/download/typo3_console/${TYPO3_CONSOLE_VERSION}/zip/" && \
+    mkdir -p ${WEB_ROOT}/typo3conf/ext/ && \
+    unzip typo3_console.zip -d ${WEB_ROOT}/typo3conf/ext/typo3_console/ && \
+    rm typo3_console.zip && \
+    php typo3conf/ext/typo3_console/activate
+
 
 VOLUME ${WEB_ROOT}/fileadmin
 VOLUME ${WEB_ROOT}/typo3conf

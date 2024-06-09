@@ -1,20 +1,34 @@
 services:
   typo3:
-    build:
-      context: src/
+    image: typo3:latest
+#    build:
+#      context: src/
     environment:
-      ENABLE_REVERSE_PROXY: false
       TZ: Europe/Berlin
-      DOMAIN: test.com
-      LOG_LEVEL: warn  # info
+      TYPO3_AUTO_SETUP_ENABLE: true
+      TYPO3_PROJECT_NAME: "My Test Site"
+      TYPO3_SETUP_ADMIN_USERNAME: admin
+      TYPO3_SETUP_ADMIN_PASSWORD: EinsP4assw0rt!
+      TYPO3_SETUP_ADMIN_EMAIL: admin@beispiel.de
+      TYPO3_DB_DRIVER: pdoMysql
+      TYPO3_DB_DBNAME: typo3
+      TYPO3_DB_HOST: database
+      TYPO3_DB_PORT: 3306
+      TYPO3_DB_USERNAME: typo3
+      TYPO3_DB_PASSWORD: password
     ports:
       - "80:80"
     volumes:
+      - sqlite:/mnt/database
       - fileadmin:/var/www/html/fileadmin
       - typo3conf:/var/www/html/typo3conf
       - uploads:/var/www/html/uploads
     networks:
       - backend
+    depends_on:
+      database:
+        condition: service_healthy
+
   database:
     image: mysql:8.4
     command:
@@ -25,12 +39,23 @@ services:
       - "MYSQL_PASSWORD=${MYSQL_PASSWORD:-password}"
       - "MYSQL_DATABASE=${MYSQL_DATABASE:-typo3}"
       - "MYSQL_RANDOM_ROOT_PASSWORD=yes"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 0s
+    volumes:
+      - database:/var/lib/mysql
     networks:
       - backend
+
 volumes:
+  sqlite:
   database:
   fileadmin:
   typo3conf:
   uploads:
+
 networks:
   backend:
