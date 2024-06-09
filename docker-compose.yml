@@ -6,7 +6,7 @@ services:
       REVERSE_PROXY_ENABLE: false
       TZ: Europe/Berlin
       DOMAIN: test.com
-      LOG_LEVEL: warn  # info
+      LOG_LEVEL: warn
     ports:
       - "80:80"
     volumes:
@@ -15,6 +15,7 @@ services:
       - uploads:/var/www/html/uploads
     networks:
       - backend
+
   database:
     image: mysql:8.0
     command:
@@ -25,12 +26,16 @@ services:
       - "MYSQL_PASSWORD=${MYSQL_PASSWORD:-password}"
       - "MYSQL_DATABASE=${MYSQL_DATABASE:-typo3}"
       - "MYSQL_RANDOM_ROOT_PASSWORD=yes"
+    volumes:
+      - database
     networks:
       - backend
+
 volumes:
   database:
   fileadmin:
   typo3conf:
   uploads:
+
 networks:
   backend:
