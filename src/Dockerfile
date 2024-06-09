@@ -7,16 +7,16 @@ ARG TYPO3_VERSION=12.4.11
 ARG WEB_ROOT='/var/www/html'
 
 ENV TZ=UTC \
-    DOMAIN='' \
     LOG_LEVEL=warn \
     WEB_ROOT=$WEB_ROOT \
     LOCALE='en_US' \
+    TYPO3_SETUP_ENABLE=false \
     # Reverse Proxy
     REVERSE_PROXY_ENABLE=false \
     REVERSE_PROXY_SSL='*' \
     REVERSE_PROXY_IPS='*' \
     REVERSE_PROXY_HEADER_MULTI_VALUE='first' \
-    REVERSE_PROXY_TRUSTED_HOSTS_PATTERN='' \
+    REVERSE_PROXY_TRUSTED_HOSTS_PATTERN='SERVER_NAME' \
     # PHP
     PHP_MEMORY_LIMIT=256M \
     PHP_MAX_EXECUTION_TIME=240 \
@@ -49,11 +49,13 @@ RUN apt-get update && \
         zlib1g-dev \
     # Install required 3rd party tools
         graphicsmagick ghostscript locales && \
+    sed -i "s/^# *\(${LOCALE}.UTF-8\)/\1/" /etc/locale.gen && \
+    locale-gen && \
     # Configure extensions \
     pecl install redis && \
-    docker-php-ext-enable redis && \
     docker-php-ext-configure gd --with-libdir=/usr/include/ --with-jpeg --with-freetype && \
-    docker-php-ext-install -j$(nproc) pdo_mysql mysqli soap gd zip opcache intl pgsql pdo_pgsql exif && \
+    docker-php-ext-install -j$(nproc) soap gd zip opcache intl pgsql pdo pdo_pgsql pdo_mysql mysqli exif && \
+    docker-php-ext-enable redis && \
     # Configure Apache as needed
     a2enmod rewrite && \
     apt-get clean && \
@@ -71,6 +73,7 @@ ADD https://get.typo3.org/${TYPO3_VERSION}/tar.gz typo3_src-${TYPO3_VERSION}
 COPY configs/php.ini /usr/local/etc/php/conf.d/typo3.ini
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY docker-entrypoint.d /docker-entrypoint.d
+COPY scripts/typo3 /usr/bin/typo3
 
 # Install Typo3
 RUN tar -xzf typo3_src-${TYPO3_VERSION} && \
@@ -83,7 +86,8 @@ RUN tar -xzf typo3_src-${TYPO3_VERSION} && \
     mkdir fileadmin && \
     mkdir uploads && \
     chown -R www-data: $WEB_ROOT && \
-    chmod +x /docker-entrypoint.sh /usr/local/bin/docker-php-entrypoint
+    chmod +x /docker-entrypoint.sh /usr/local/bin/docker-php-entrypoint && \
+    chmod +x /bin/typo3
 
 VOLUME ${WEB_ROOT}/fileadmin
 VOLUME ${WEB_ROOT}/typo3conf

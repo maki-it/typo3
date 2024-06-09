@@ -1,15 +1,14 @@
 services:
   typo3:
-    build:
-      context: src/
+    image: typo3:latest
+#    build:
+#      context: src/
     environment:
-      REVERSE_PROXY_ENABLE: false
       TZ: Europe/Berlin
-      DOMAIN: test.com
-      LOG_LEVEL: warn
     ports:
       - "80:80"
     volumes:
+      - sqlite:/mnt/database
       - fileadmin:/var/www/html/fileadmin
       - typo3conf:/var/www/html/typo3conf
       - uploads:/var/www/html/uploads
@@ -27,11 +26,12 @@ services:
       - "MYSQL_DATABASE=${MYSQL_DATABASE:-typo3}"
       - "MYSQL_RANDOM_ROOT_PASSWORD=yes"
     volumes:
-      - database
+      - database:/var/lib/mysql
     networks:
       - backend
 
 volumes:
+  sqlite:
   database:
   fileadmin:
   typo3conf:

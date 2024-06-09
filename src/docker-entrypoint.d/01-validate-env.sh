@@ -20,7 +20,6 @@ validate_email_address() {
     fi
 }
 
-[[ "$DOMAIN" == "" ]] && (echo "ERROR: 'DOMAIN' environment variable must not be empty"; exit 1) || validate_domain "$DOMAIN"
 [[ "$MAIL_SMTP_SERVER" == "" ]] || validate_domain "$MAIL_SMTP_SERVER"
 [[ "$MAIL_SMTP_DOMAIN" == "" ]] || validate_domain "$MAIL_SMTP_DOMAIN"
 [[ "$MAIL_SMTP_USERNAME" == "" ]] || validate_email_address "$MAIL_SMTP_USERNAME"

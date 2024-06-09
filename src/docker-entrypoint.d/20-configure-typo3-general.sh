@@ -13,4 +13,4 @@ mkdir -p "${WEB_ROOT}"/typo3conf/system/
 echo "<?php
 \$GLOBALS['TYPO3_CONF_VARS']['SYS']['systemLocale'] = '${LOCALE}.UTF-8';
 \$GLOBALS['TYPO3_CONF_VARS']['SYS']['UTF8filesystem'] = true;
-" >> "${WEB_ROOT}"/typo3conf/system/additional.php
+" > "${WEB_ROOT}"/typo3conf/system/additional.php

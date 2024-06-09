@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Wrapper script for Typo3 CLI tool.
+# Must be run inside directory `typo3/sysext/core/bin` to avoid errors.
+
+cd /var/www/html/typo3/sysext/core/bin || exit
+
+php typo3 "$@"
+
+cd ~-
