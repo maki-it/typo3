@@ -3,7 +3,7 @@
 # Wrapper script for Typo3 CLI tool.
 # Must be run inside directory `typo3/sysext/core/bin` to avoid errors.
 
-cd /var/www/html/typo3/sysext/core/bin || exit
+cd /var/www/html/typo3/sysext/core/bin || exit 1
 
 php typo3 "$@"
 
