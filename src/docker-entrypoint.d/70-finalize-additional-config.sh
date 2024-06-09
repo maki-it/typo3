@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Remove empty lines in file
-sed -iE '/^$/d' "${WEB_ROOT}"/typo3conf/system/additional.php
+sed -i -E '/^$/d' "${WEB_ROOT}"/typo3conf/system/additional.php
 
 # Mark as first install if not initialized yet
 INIT_FLAG_FILE="${WEB_ROOT}"/typo3conf/.initialized
