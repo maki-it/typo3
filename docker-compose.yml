@@ -3,7 +3,7 @@ services:
     build:
       context: src/
     environment:
-      ENABLE_REVERSE_PROXY: false
+      REVERSE_PROXY_ENABLE: false
       TZ: Europe/Berlin
       DOMAIN: test.com
       LOG_LEVEL: warn  # info

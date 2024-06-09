@@ -8,7 +8,6 @@ A Typo3 Image for Container and Cloud Environments.
 
 - `TZ`: Default: `UTC` Timezone inside the container, e.g. "Europe/Berlin"
 - `DOMAIN`: Default `-` Domain name of the Website, e.g. "domain.com"
-- `ENABLE_REVERSE_PROXY`: Default: `false` Enable to access the website behind a reverse proxy
 - `LOCALE`: Default: `en_US` Set UTF-8 compatible locale information
 - `LOG_LEVEL`: Default: `warn` [Log level](#log-levels) of the Apache web server
 
@@ -18,6 +17,14 @@ A Typo3 Image for Container and Cloud Environments.
 - `PHP_MAX_EXECUTION_TIME`: Default `240` Maximum execution time for PHP scripts
 - `PHP_MAX_UPLOAD_FILESIZE`: Default `32M` Maximum size of a single file to upload
 - `PHP_MAX_POST_SIZE` Default `32M` Maximum Post size
+
+### Revers Proxy
+
+- `REVERSE_PROXY_ENABLE`: Default: `false` Enable to access the website behind a reverse proxy
+- `REVERSE_PROXY_SSL`: Default: `*` '*' (wildcard) or list of IP addresses of proxies that use SSL (https) for the connection to the client, but an unencrypted connection (http) to the server. See the [docs](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/SYS.html#confval-globals-typo3-conf-vars-sys-reverseproxyssl)
+- `REVERSE_PROXY_IPS`: Default: `*` List of IP addresses or '*' (wildcard). If TYPO3 is behind one or more (intransparent) reverse proxies the IP addresses must be added here. See the [docs](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/SYS.html#confval-globals-typo3-conf-vars-sys-reverseproxyip)
+- `REVERSE_PROXY_HEADER_MULTI_VALUE`: Default: `first` Defines which values of a proxy header (for example HTTP_X_FORWARDED_FOR) to use, if more than one is found. See the [docs](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/SYS.html#confval-globals-typo3-conf-vars-sys-reverseproxyheadermultivalue)
+- `REVERSE_PROXY_TRUSTED_HOSTS_PATTERN`: Default: same as `DOMAIN` env var. Regular expression pattern that matches all allowed hostnames (including their ports) of this TYPO3 installation. See the [docs](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/SYS.html#confval-globals-typo3-conf-vars-sys-trustedhostspattern)
 
 ### Mail/SMTP
 
