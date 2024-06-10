@@ -62,14 +62,14 @@ RUN apt-get update && \
     # Configure Apache as needed
     a2enmod rewrite && \
     apt-get clean && \
-    apt-get -y purge \
+    apt-get -y purge --auto-remove \
         libxml2-dev libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
         libpng-dev \
         libzip-dev \
         zlib1g-dev && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* /usr/src/php.tar.xz*
 
 ADD https://get.typo3.org/${TYPO3_VERSION}/tar.gz typo3_src-${TYPO3_VERSION}
 
