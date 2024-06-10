@@ -39,44 +39,64 @@ ENV TZ=UTC \
 
 WORKDIR $WEB_ROOT
 
-RUN apt-get update && \
+# Configure PHP
+RUN savedAptMark="$(apt-mark showmanual)" && \
+    apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
-    # Configure PHP
-        libxml2-dev libfreetype6-dev \
-        libjpeg62-turbo-dev \
+        libfreetype6-dev \
+        libtool \
+        libxml2-dev \
+        libjpeg-dev \
         libmcrypt-dev \
         libpng-dev \
         libpq-dev \
-        libzip-dev \
-        zlib1g-dev \
-    # Install required 3rd party tools
-        graphicsmagick ghostscript locales unzip && \
-    sed -i "s/^# *\(${LOCALE}.UTF-8\)/\1/" /etc/locale.gen && \
-    locale-gen && \
-    # Configure extensions \
-    pecl install redis && \
-    docker-php-ext-configure gd --with-libdir=/usr/include/ --with-jpeg --with-freetype && \
-    docker-php-ext-install -j$(nproc) soap gd zip opcache intl pgsql pdo pdo_pgsql pdo_mysql mysqli exif && \
-    docker-php-ext-enable redis && \
-    # Configure Apache as needed
-    a2enmod rewrite && \
-    apt-get clean && \
-    apt-get -y purge --auto-remove \
-        libxml2-dev libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libmcrypt-dev \
-        libpng-dev \
+        libicu-dev \
+        libyaml-dev \
         libzip-dev \
         zlib1g-dev && \
-    rm -rf /var/lib/apt/lists/* /usr/src/php.tar.xz*
+    rm -rf /var/lib/apt/lists/* && \
+    export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" && \
+    pecl install apcu yaml && \
+    docker-php-ext-configure intl --enable-intl && \
+    docker-php-ext-configure gd --with-libdir=/usr/include/ --with-jpeg --with-freetype && \
+    docker-php-ext-install -j$(nproc) soap gd zip opcache intl pdo pdo_pgsql pdo_mysql mysqli exif && \
+    docker-php-ext-enable apcu yaml && \
+    echo "ServerName localhost" >> /etc/apache2/apache2.conf && \
+    apt-get clean && \
+    apt-mark auto '.*' > /dev/null && \
+    apt-mark manual $savedAptMark && \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $PHPIZE_DEPS && \
+    #mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
+    rm -rf /usr/src/php.tar.xz*
 
-ADD https://get.typo3.org/${TYPO3_VERSION}/tar.gz typo3_src-${TYPO3_VERSION}
+# Install required 3rd party tools
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        imagemagick \
+        ghostscript \
+        locales  \
+        unzip \
+        supervisor \
+        libzip4 \
+        libyaml-0-2 \
+        cron && \
+    rm -rf /var/lib/apt/lists/* && \
+    sed -i "s/^# *\(${LOCALE}.UTF-8\)/\1/" /etc/locale.gen && \
+    locale-gen
 
-COPY configs/php.ini /usr/local/etc/php/conf.d/typo3.ini
+RUN a2enmod rewrite expires headers
+
+# Add recommended opcache settings from https://secure.php.net/manual/en/opcache.installation.php
+COPY configs/opcache-recommended.ini /usr/local/etc/php/conf.d/opcache-recommended.ini
+COPY configs/typo3-php.ini /usr/local/etc/php/conf.d/typo3.ini
+COPY configs/supervisord.conf /etc/supervisor/supervisord.conf
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY docker-entrypoint.d /docker-entrypoint.d
 COPY scripts/typo3 /usr/bin/typo3
+
+ADD https://get.typo3.org/${TYPO3_VERSION}/tar.gz typo3_src-${TYPO3_VERSION}
 
 # Copy composer binary to this image
 #COPY --from=composer/composer:latest-bin /composer /usr/local/bin/composer
@@ -98,7 +118,9 @@ RUN tar -xzf typo3_src-${TYPO3_VERSION} && \
     mkdir -p ${WEB_ROOT}/typo3conf/ext/ && \
     unzip typo3_console.zip -d ${WEB_ROOT}/typo3conf/ext/typo3_console/ && \
     rm typo3_console.zip && \
-    php typo3conf/ext/typo3_console/activate
+    php typo3conf/ext/typo3_console/activate && \
+    echo "*/5 * * * * /usr/local/bin/php ${WEB_ROOT}/typo3/sysext/core/bin/typo3 scheduler:run" > /var/spool/cron/crontabs/www-data && \
+    chmod 600 /var/spool/cron/crontabs/www-data
 
 
 VOLUME ${WEB_ROOT}/fileadmin
@@ -112,4 +134,4 @@ EXPOSE 80
 STOPSIGNAL SIGWINCH
 
 ENTRYPOINT ["bash", "/docker-entrypoint.sh"]
-CMD ["apache2-foreground"]
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
