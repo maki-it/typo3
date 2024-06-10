@@ -60,9 +60,8 @@ RUN savedAptMark="$(apt-mark showmanual)" && \
     pecl install apcu yaml && \
     docker-php-ext-configure intl --enable-intl && \
     docker-php-ext-configure gd --with-libdir=/usr/include/ --with-jpeg --with-freetype && \
-    docker-php-ext-install -j$(nproc) soap gd zip opcache intl pdo pdo_pgsql pdo_mysql mysqli exif && \
+    docker-php-ext-install -j$(nproc) soap gd zip opcache intl pgsql pdo pdo_pgsql pdo_mysql mysqli exif && \
     docker-php-ext-enable apcu yaml && \
-    echo "ServerName localhost" >> /etc/apache2/apache2.conf && \
     apt-get clean && \
     apt-mark auto '.*' > /dev/null && \
     apt-mark manual $savedAptMark && \
@@ -91,6 +90,7 @@ RUN a2enmod rewrite expires headers
 COPY configs/opcache-recommended.ini /usr/local/etc/php/conf.d/opcache-recommended.ini
 COPY configs/typo3-php.ini /usr/local/etc/php/conf.d/typo3.ini
 COPY configs/supervisord.conf /etc/supervisor/supervisord.conf
+COPY configs/apache-typo3-site.conf /etc/apache2/sites-available/typo3.conf
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY docker-entrypoint.d /docker-entrypoint.d
@@ -120,7 +120,10 @@ RUN tar -xzf typo3_src-${TYPO3_VERSION} && \
     rm typo3_console.zip && \
     php typo3conf/ext/typo3_console/activate && \
     echo "*/5 * * * * /usr/local/bin/php ${WEB_ROOT}/typo3/sysext/core/bin/typo3 scheduler:run" > /var/spool/cron/crontabs/www-data && \
-    chmod 600 /var/spool/cron/crontabs/www-data
+    chmod 600 /var/spool/cron/crontabs/www-data && \
+    sed -i "s|DocumentRoot .*|DocumentRoot ${WEB_ROOT}|g" /etc/apache2/sites-available/typo3.conf && \
+    ln -s /etc/apache2/sites-available/typo3.conf /etc/apache2/sites-enabled/typo3.conf && \
+    unlink /etc/apache2/sites-enabled/000-default.conf
 
 
 VOLUME ${WEB_ROOT}/fileadmin

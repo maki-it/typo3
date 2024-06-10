@@ -2,6 +2,10 @@
 
 set -eo pipefail
 
+if ! [[ "$*" =~ "supervisord" ]]; then
+  exec "$@"
+fi
+
 echo "Executing startup scripts..."
 [ -d /docker-entrypoint.d/ ] && [ "$(ls -1 /docker-entrypoint.d/*.sh 2> /dev/null)" ] && {
   chmod +x /docker-entrypoint.d/*.sh

@@ -1,8 +1,8 @@
 services:
   typo3:
-#    image: typo3:latest
-    build:
-      context: src/
+    image: typo3:latest
+#    build:
+#      context: src/
     environment:
       TZ: Europe/Berlin
       TYPO3_AUTO_SETUP_ENABLE: true
