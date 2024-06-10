@@ -11,7 +11,6 @@ The TYPO3 CLI tool can be run with the command [`typo3`](src/scripts/typo3) and 
 ### General
 
 - `TZ`: Default: `UTC` Timezone inside the container, e.g. "Europe/Berlin"
-- `DOMAIN`: Default `-` Domain name of the Website, e.g. "domain.com"
 - `LOCALE`: Default: `en_US` Set a UTF-8 compatible localisation
 - `LOG_LEVEL`: Default: `warn` [Log level](#log-levels) of the Apache web server
 
