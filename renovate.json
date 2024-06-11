@@ -18,7 +18,13 @@
       "matchStrings": ["ARG TYPO3_CONSOLE_VERSION=(?<currentValue>.*?)\\n"],
       "extractVersionTemplate": "^v(?<version>.*)$",
       "depNameTemplate": "TYPO3-Console/TYPO3-Console",
-      "datasourceTemplate": "github-tags"
+      "datasourceTemplate": "github-releases"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["TYPO3/typo3"],
+      "sourceUrl": "https://github.com/org/dummy"
     }
   ]
 }
