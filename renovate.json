@@ -24,7 +24,7 @@
   "packageRules": [
     {
       "matchPackageNames": ["TYPO3/typo3"],
-      "sourceUrl": "https://github.com/org/dummy"
+      "sourceUrl": "https://docs.typo3.org/c/typo3/cms-core/main/en-us/Index.html"
     }
   ]
 }
