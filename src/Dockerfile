@@ -3,7 +3,7 @@ FROM php:8.3-apache-bookworm as base
 LABEL maintainer="Maki IT <kontakt@maki-it.de>"
 
 # renovate: datasource=github-tags depName=typo3 packageName=TYPO3/typo3
-ARG TYPO3_VERSION=13.3.0
+ARG TYPO3_VERSION=13.3.1
 # renovate: datasource=github-releases depName=typo3-console packageName=TYPO3-Console/TYPO3-Console
 ARG TYPO3_CONSOLE_VERSION=8.1.1
 ARG WEB_ROOT='/var/www/html'
