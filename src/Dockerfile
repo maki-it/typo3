@@ -1,4 +1,4 @@
-FROM php:8.3-apache-bookworm as base
+FROM php:8.4-apache-bookworm as base
 
 LABEL maintainer="Maki IT <kontakt@maki-it.de>"
 
